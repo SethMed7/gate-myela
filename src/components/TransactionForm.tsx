@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, CreditCard, Lock, ArrowRight, Loader2 } from "lucide-react";
 
 interface TransactionFormProps {
   type: "sale" | "authorize" | "capture" | "refund" | "void";
@@ -66,13 +66,11 @@ export default function TransactionForm({
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setIsSubmitting(false);
     setIsSuccess(true);
 
-    // Reset after showing success
     setTimeout(() => {
       setIsSuccess(false);
       setFormData({
@@ -90,22 +88,23 @@ export default function TransactionForm({
 
   if (isSuccess) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-        <div className="text-center py-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-4">
-            <CheckCircle className="w-8 h-8" />
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-8 page-transition">
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 mb-6 ring-8 ring-emerald-50/50">
+            <CheckCircle className="w-10 h-10" strokeWidth={1.5} />
           </div>
-          <h3 className="text-xl font-semibold text-slate-800 mb-2">
+          <h3 className="text-2xl font-bold text-slate-900 mb-2">
             Transaction Successful
           </h3>
-          <p className="text-slate-600 mb-4">
-            {type === "sale" && "The sale has been processed successfully."}
+          <p className="text-slate-500 mb-6 max-w-sm mx-auto">
+            {type === "sale" && "The sale has been processed and funds captured."}
             {type === "authorize" && "The authorization has been approved."}
             {type === "capture" && "The funds have been captured successfully."}
             {type === "refund" && "The refund has been processed successfully."}
-            {type === "void" && "The transaction has been voided successfully."}
+            {type === "void" && "The transaction has been voided."}
           </p>
-          <div className="inline-block bg-slate-100 rounded-lg px-4 py-2 font-mono text-sm text-slate-700">
+          <div className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-5 py-3 font-mono text-sm">
+            <span className="text-slate-400">ID:</span>
             TXN-{Math.random().toString(36).substring(2, 11).toUpperCase()}
           </div>
         </div>
@@ -113,65 +112,80 @@ export default function TransactionForm({
     );
   }
 
+  const inputClasses = "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] focus:bg-white transition-all";
+  const labelClasses = "block text-sm font-semibold text-slate-700 mb-2";
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
-        <p className="text-slate-600 mt-1">{description}</p>
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden page-transition">
+      {/* Header */}
+      <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+        <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+        <p className="text-slate-500 mt-1 text-sm">{description}</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="p-6">
         {showTransactionId && (
           <div className="mb-6">
-            <h3 className="font-medium text-slate-800 mb-4">Transaction Details</h3>
-            <div className="grid gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Transaction ID
-                </label>
-                <input
-                  type="text"
-                  placeholder="TXN-123456789"
-                  value={formData.transactionId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, transactionId: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent"
-                  required
-                />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-1.5 rounded-lg bg-slate-100">
+                <CreditCard className="w-4 h-4 text-slate-600" />
               </div>
+              <h3 className="font-semibold text-slate-800">Transaction Details</h3>
+            </div>
+            <div>
+              <label className={labelClasses}>Transaction ID</label>
+              <input
+                type="text"
+                placeholder="TXN-123456789"
+                value={formData.transactionId}
+                onChange={(e) =>
+                  setFormData({ ...formData, transactionId: e.target.value })
+                }
+                className={`${inputClasses} font-mono`}
+                required
+              />
             </div>
           </div>
         )}
 
         {showCardFields && (
           <div className="mb-6">
-            <h3 className="font-medium text-slate-800 mb-4">Card Information</h3>
-            <div className="grid gap-4">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-1.5 rounded-lg bg-slate-100">
+                <CreditCard className="w-4 h-4 text-slate-600" />
+              </div>
+              <h3 className="font-semibold text-slate-800">Card Information</h3>
+              <div className="ml-auto flex items-center gap-1.5 text-xs text-slate-400">
+                <Lock className="w-3 h-3" />
+                Secured
+              </div>
+            </div>
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Card Number
-                </label>
-                <input
-                  type="text"
-                  placeholder="4111 1111 1111 1111"
-                  maxLength={19}
-                  value={formData.cardNumber}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      cardNumber: formatCardNumber(e.target.value),
-                    })
-                  }
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent"
-                  required
-                />
+                <label className={labelClasses}>Card Number</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="4111 1111 1111 1111"
+                    maxLength={19}
+                    value={formData.cardNumber}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        cardNumber: formatCardNumber(e.target.value),
+                      })
+                    }
+                    className={`${inputClasses} font-mono tracking-wider`}
+                    required
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <div className="w-8 h-5 bg-gradient-to-r from-blue-600 to-blue-700 rounded text-[8px] text-white flex items-center justify-center font-bold">VISA</div>
+                  </div>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Expiration Date
-                  </label>
+                  <label className={labelClasses}>Expiry Date</label>
                   <input
                     type="text"
                     placeholder="MM/YY"
@@ -183,17 +197,15 @@ export default function TransactionForm({
                         expiry: formatExpiry(e.target.value),
                       })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent"
+                    className={`${inputClasses} font-mono text-center tracking-widest`}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    CVV
-                  </label>
+                  <label className={labelClasses}>CVV</label>
                   <input
                     type="text"
-                    placeholder="123"
+                    placeholder="•••"
                     maxLength={4}
                     value={formData.cvv}
                     onChange={(e) =>
@@ -202,7 +214,7 @@ export default function TransactionForm({
                         cvv: e.target.value.replace(/\D/g, ""),
                       })
                     }
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent"
+                    className={`${inputClasses} font-mono text-center tracking-widest`}
                     required
                   />
                 </div>
@@ -212,16 +224,21 @@ export default function TransactionForm({
         )}
 
         <div className="mb-6">
-          <h3 className="font-medium text-slate-800 mb-4">
-            {showTransactionId ? "Amount" : "Transaction Details"}
-          </h3>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="p-1.5 rounded-lg bg-slate-100">
+              <span className="text-slate-600 font-bold text-sm">$</span>
+            </div>
+            <h3 className="font-semibold text-slate-800">
+              {showTransactionId ? "Amount" : "Transaction Details"}
+            </h3>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className={labelClasses}>
                 {type === "refund" ? "Refund Amount" : type === "capture" ? "Capture Amount" : "Amount"}
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">
                   $
                 </span>
                 <input
@@ -234,42 +251,40 @@ export default function TransactionForm({
                       amount: e.target.value.replace(/[^\d.]/g, ""),
                     })
                   }
-                  className="w-full pl-8 pr-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent"
+                  className={`${inputClasses} pl-8 font-mono text-lg`}
                   required
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Currency
-              </label>
+              <label className={labelClasses}>Currency</label>
               <select
                 value={formData.currency}
                 onChange={(e) =>
                   setFormData({ ...formData, currency: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent bg-white"
+                className={inputClasses}
               >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
               </select>
             </div>
           </div>
 
           {!showTransactionId && (
             <div className="mt-4">
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Description (Optional)
+              <label className={labelClasses}>
+                Description <span className="text-slate-400 font-normal">(Optional)</span>
               </label>
               <input
                 type="text"
-                placeholder="Order #12345"
+                placeholder="Order #12345 or invoice reference"
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent"
+                className={inputClasses}
               />
             </div>
           )}
@@ -277,15 +292,15 @@ export default function TransactionForm({
 
         {showReason && (
           <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Reason (Optional)
+            <label className={labelClasses}>
+              Reason <span className="text-slate-400 font-normal">(Optional)</span>
             </label>
             <select
               value={formData.reason}
               onChange={(e) =>
                 setFormData({ ...formData, reason: e.target.value })
               }
-              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent bg-white"
+              className={inputClasses}
             >
               <option value="">Select a reason...</option>
               <option value="customer_request">Customer Request</option>
@@ -298,24 +313,34 @@ export default function TransactionForm({
           </div>
         )}
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+        <div className="flex items-center justify-between pt-6 border-t border-slate-100">
           <button
             type="button"
             onClick={() => window.history.back()}
-            className="px-6 py-2.5 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+            className="px-5 py-2.5 text-slate-600 font-medium hover:text-slate-900 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`px-6 py-2.5 rounded-lg text-white font-medium transition-colors disabled:opacity-50 ${
+            className={`group flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold transition-all disabled:opacity-50 btn-press ${
               isDanger
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-[#3b82f6] hover:bg-[#2563eb]"
+                ? "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20"
+                : "bg-[#3B82F6] hover:bg-[#2563eb] shadow-lg shadow-blue-500/20"
             }`}
           >
-            {isSubmitting ? "Processing..." : submitLabel}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                {submitLabel}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </>
+            )}
           </button>
         </div>
       </form>
