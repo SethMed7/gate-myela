@@ -1,22 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/Header";
+import PageHeader from "@/components/PageHeader";
 import {
   Plus,
   Search,
-  MoreHorizontal,
   X,
-  Calendar,
-  DollarSign,
-  Repeat,
   CheckCircle,
   Pause,
   Play,
-  Trash2,
   Edit2,
   Users,
-  Clock,
 } from "lucide-react";
 
 interface Plan {
@@ -188,7 +182,7 @@ export default function SubscriptionsPage() {
       status: "active",
     };
 
-    setPlans([...plans, newPlan]);
+    setPlans((prev) => [...prev, newPlan]);
     setIsSubmitting(false);
     setShowSuccess(true);
 
@@ -213,13 +207,14 @@ export default function SubscriptionsPage() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const selectedPlan = plans.find((p) => p.id === subFormData.planId);
+    const planPrice = selectedPlan ? selectedPlan.price : 0;
 
     const newSubscription: Subscription = {
       id: `SUB-${String(subscriptions.length + 1).padStart(3, "0")}`,
       customer: subFormData.customer,
       customerEmail: subFormData.customerEmail,
       plan: selectedPlan?.name || "",
-      amount: `$${selectedPlan?.price.toFixed(2)}`,
+      amount: `$${planPrice.toFixed(2)}`,
       status: "active",
       nextBilling: new Date(
         new Date(subFormData.startDate).getTime() + 30 * 24 * 60 * 60 * 1000
@@ -231,7 +226,7 @@ export default function SubscriptionsPage() {
       }),
     };
 
-    setSubscriptions([newSubscription, ...subscriptions]);
+    setSubscriptions((prev) => [newSubscription, ...prev]);
     setIsSubmitting(false);
     setShowSuccess(true);
 
@@ -247,51 +242,75 @@ export default function SubscriptionsPage() {
     }, 1500);
   };
 
-  const inputClasses =
-    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] focus:bg-white transition-all";
+  const inputClasses = "input-base";
 
-  const mrr = subscriptions
-    .filter((s) => s.status === "active")
-    .reduce((sum, s) => sum + parseFloat(s.amount.replace("$", "")), 0);
+  const activeSubscriptions = subscriptions.filter((s) => s.status === "active");
+  const mrr = activeSubscriptions.reduce((sum, s) => sum + parseFloat(s.amount.replace("$", "")), 0);
+  const avgSubscription = activeSubscriptions.length > 0 ? mrr / activeSubscriptions.length : 0;
 
   return (
-    <>
-      <Header title="Subscriptions" subtitle="Manage plans and recurring billing" />
-      <div className="flex-1 p-6 overflow-auto bg-slate-50/50">
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-[#0D0D0D] to-[#1a1a1a] rounded-2xl p-5 text-white">
+    <div className="flex-1 overflow-auto bg-[var(--color-shell)]">
+      <div className="page-shell">
+        <PageHeader
+          title="Subscriptions"
+          subtitle="Manage plans, pricing, and recurring billing."
+          actions={
+            <>
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder={`Search ${activeTab}...`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input-base pl-9 w-56"
+                />
+              </div>
+              <button
+                onClick={() =>
+                  activeTab === "plans" ? setShowPlanModal(true) : setShowSubModal(true)
+                }
+                className="btn btn-primary btn-md"
+              >
+                <Plus className="w-4 h-4" />
+                {activeTab === "plans" ? "Create Plan" : "New Subscription"}
+              </button>
+            </>
+          }
+        />
+
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+          <div className="panel p-5 bg-gradient-to-br from-[#0b0b0b] to-[#1a1a1a] text-white">
             <div className="text-sm font-medium text-white/60">Monthly Recurring Revenue</div>
-            <div className="text-3xl font-bold mt-1">${mrr.toLocaleString()}</div>
+            <div className="text-3xl font-semibold mt-1">${mrr.toLocaleString()}</div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Active Subscriptions</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">
-              {subscriptions.filter((s) => s.status === "active").length}
+            <div className="text-3xl font-semibold text-slate-900 mt-1">
+              {activeSubscriptions.length}
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Active Plans</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">
+            <div className="text-3xl font-semibold text-slate-900 mt-1">
               {plans.filter((p) => p.status === "active").length}
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Avg. Subscription Value</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">
-              ${subscriptions.length > 0 ? (mrr / subscriptions.filter((s) => s.status === "active").length).toFixed(0) : 0}
+            <div className="text-3xl font-semibold text-slate-900 mt-1">
+              ${avgSubscription.toFixed(0)}
             </div>
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2 bg-white rounded-xl p-1 border border-slate-200/60">
             <button
               onClick={() => setActiveTab("subscriptions")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "subscriptions"
-                  ? "bg-[#3B82F6] text-white shadow-lg shadow-blue-500/20"
+                  ? "bg-[var(--color-primary)] text-white shadow-lg shadow-blue-500/20"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
@@ -301,55 +320,35 @@ export default function SubscriptionsPage() {
               onClick={() => setActiveTab("plans")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "plans"
-                  ? "bg-[#3B82F6] text-white shadow-lg shadow-blue-500/20"
+                  ? "bg-[var(--color-primary)] text-white shadow-lg shadow-blue-500/20"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
               Plans
             </button>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder={`Search ${activeTab}...`}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all"
-              />
-            </div>
-            <button
-              onClick={() => (activeTab === "plans" ? setShowPlanModal(true) : setShowSubModal(true))}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#3B82F6] text-white rounded-xl font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-500/20 btn-press"
-            >
-              <Plus className="w-5 h-5" />
-              {activeTab === "plans" ? "Create Plan" : "New Subscription"}
-            </button>
-          </div>
         </div>
 
         {activeTab === "subscriptions" ? (
-          /* Subscriptions List */
-          <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
+          <div className="panel overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead>
-                  <tr className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">
-                    <th className="px-6 py-4">Customer</th>
-                    <th className="px-6 py-4">Plan</th>
-                    <th className="px-6 py-4">Amount</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4">Next Billing</th>
-                    <th className="px-6 py-4">Started</th>
-                    <th className="px-6 py-4 text-right">Actions</th>
+                <thead className="bg-slate-50/60">
+                  <tr>
+                    <th className="px-6 py-4 table-head">Customer</th>
+                    <th className="px-6 py-4 table-head">Plan</th>
+                    <th className="px-6 py-4 table-head">Amount</th>
+                    <th className="px-6 py-4 table-head">Status</th>
+                    <th className="px-6 py-4 table-head">Next Billing</th>
+                    <th className="px-6 py-4 table-head">Started</th>
+                    <th className="px-6 py-4 table-head text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {filteredSubscriptions.map((sub) => {
                     const StatusIcon = statusConfig[sub.status].icon;
                     return (
-                      <tr key={sub.id} className="hover:bg-slate-50/50 transition-colors">
+                      <tr key={sub.id} className="hover:bg-slate-50/60 transition-colors">
                         <td className="px-6 py-4">
                           <div>
                             <div className="font-semibold text-slate-900">{sub.customer}</div>
@@ -357,12 +356,12 @@ export default function SubscriptionsPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#3B82F6]/10 text-[#3B82F6]">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-[var(--color-primary-soft)] text-[var(--color-primary)]">
                             {sub.plan}
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="font-bold text-slate-900">{sub.amount}</span>
+                          <span className="font-semibold text-slate-900">{sub.amount}</span>
                           <span className="text-slate-400 text-sm">/mo</span>
                         </td>
                         <td className="px-6 py-4">
@@ -384,15 +383,15 @@ export default function SubscriptionsPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-end gap-1">
                             {sub.status === "active" ? (
-                              <button className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all">
+                              <button className="btn-icon" aria-label="Pause subscription">
                                 <Pause className="w-4 h-4" />
                               </button>
                             ) : sub.status === "paused" ? (
-                              <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all">
+                              <button className="btn-icon" aria-label="Resume subscription">
                                 <Play className="w-4 h-4" />
                               </button>
                             ) : null}
-                            <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                            <button className="btn-icon hover:text-red-500" aria-label="Cancel subscription">
                               <X className="w-4 h-4" />
                             </button>
                           </div>
@@ -405,26 +404,22 @@ export default function SubscriptionsPage() {
             </div>
           </div>
         ) : (
-          /* Plans Grid */
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {plans
               .filter((p) => p.status === "active")
               .map((plan) => (
-                <div
-                  key={plan.id}
-                  className="bg-white rounded-2xl border border-slate-200/60 p-6 hover:shadow-lg hover:border-[#3B82F6]/30 transition-all"
-                >
+                <div key={plan.id} className="panel p-6 hover:shadow-lg transition-all">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="font-bold text-slate-900 text-lg">{plan.name}</h3>
+                      <h3 className="font-semibold text-slate-900 text-lg">{plan.name}</h3>
                       <p className="text-sm text-slate-500">{plan.description}</p>
                     </div>
-                    <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+                    <button className="btn-icon" aria-label="Edit plan">
                       <Edit2 className="w-4 h-4" />
                     </button>
                   </div>
                   <div className="mb-4">
-                    <span className="text-3xl font-bold text-slate-900">${plan.price}</span>
+                    <span className="text-3xl font-semibold text-slate-900">${plan.price}</span>
                     <span className="text-slate-500">/{plan.interval}</span>
                     {plan.billingDay && (
                       <div className="text-xs text-slate-400 mt-1">
@@ -453,7 +448,6 @@ export default function SubscriptionsPage() {
         )}
       </div>
 
-      {/* Create Plan Modal */}
       {showPlanModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -462,17 +456,14 @@ export default function SubscriptionsPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 mb-4">
                   <CheckCircle className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Plan Created</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Plan Created</h3>
                 <p className="text-slate-500">The plan has been created successfully.</p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between p-6 border-b border-slate-100">
-                  <h2 className="text-xl font-bold text-slate-900">Create Plan</h2>
-                  <button
-                    onClick={() => setShowPlanModal(false)}
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
-                  >
+                  <h2 className="text-xl font-semibold text-slate-900">Create Plan</h2>
+                  <button onClick={() => setShowPlanModal(false)} className="btn-icon" aria-label="Close modal">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -519,15 +510,17 @@ export default function SubscriptionsPage() {
                           min="0"
                           step="0.01"
                           value={planFormData.price}
-                          onChange={(e) => setPlanFormData({ ...planFormData, price: e.target.value })}
-                          className={`${inputClasses} pl-8`}
+                          onChange={(e) =>
+                            setPlanFormData({ ...planFormData, price: e.target.value })
+                          }
+                          className={`${inputClasses} pl-7`}
                           placeholder="99.00"
                         />
                       </div>
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-2">
-                        Billing Interval *
+                        Interval
                       </label>
                       <select
                         value={planFormData.interval}
@@ -536,16 +529,14 @@ export default function SubscriptionsPage() {
                         }
                         className={inputClasses}
                       >
-                        <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option>
                         <option value="yearly">Yearly</option>
                       </select>
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Billing Day <span className="text-slate-400 font-normal">(Optional)</span>
+                      Billing Day (Optional)
                     </label>
                     <input
                       type="number"
@@ -556,35 +547,31 @@ export default function SubscriptionsPage() {
                         setPlanFormData({ ...planFormData, billingDay: e.target.value })
                       }
                       className={inputClasses}
-                      placeholder="Day of month (1-28)"
+                      placeholder="1"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Features <span className="text-slate-400 font-normal">(One per line)</span>
+                      Features (one per line)
                     </label>
                     <textarea
                       value={planFormData.features}
                       onChange={(e) =>
                         setPlanFormData({ ...planFormData, features: e.target.value })
                       }
-                      className={`${inputClasses} h-24 resize-none`}
-                      placeholder="Unlimited transactions&#10;Advanced analytics&#10;Priority support"
+                      className={`${inputClasses} min-h-[120px]`}
+                      placeholder="Unlimited transactions"
                     />
                   </div>
                   <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                     <button
                       type="button"
                       onClick={() => setShowPlanModal(false)}
-                      className="px-5 py-2.5 text-slate-600 font-medium hover:text-slate-900 transition-colors"
+                      className="btn btn-outline btn-md"
                     >
                       Cancel
                     </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="px-6 py-2.5 bg-[#3B82F6] text-white rounded-xl font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
-                    >
+                    <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-md">
                       {isSubmitting ? "Creating..." : "Create Plan"}
                     </button>
                   </div>
@@ -595,7 +582,6 @@ export default function SubscriptionsPage() {
         </div>
       )}
 
-      {/* New Subscription Modal */}
       {showSubModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -604,17 +590,14 @@ export default function SubscriptionsPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 mb-4">
                   <CheckCircle className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Subscription Created</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Subscription Created</h3>
                 <p className="text-slate-500">The subscription is now active.</p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between p-6 border-b border-slate-100">
-                  <h2 className="text-xl font-bold text-slate-900">New Subscription</h2>
-                  <button
-                    onClick={() => setShowSubModal(false)}
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
-                  >
+                  <h2 className="text-xl font-semibold text-slate-900">New Subscription</h2>
+                  <button onClick={() => setShowSubModal(false)} className="btn-icon" aria-label="Close modal">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -629,12 +612,12 @@ export default function SubscriptionsPage() {
                       value={subFormData.customer}
                       onChange={(e) => setSubFormData({ ...subFormData, customer: e.target.value })}
                       className={inputClasses}
-                      placeholder="John Smith"
+                      placeholder="Jane Smith"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Email *
+                      Customer Email *
                     </label>
                     <input
                       type="email"
@@ -644,12 +627,12 @@ export default function SubscriptionsPage() {
                         setSubFormData({ ...subFormData, customerEmail: e.target.value })
                       }
                       className={inputClasses}
-                      placeholder="john@example.com"
+                      placeholder="jane@company.com"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Select Plan *
+                      Plan *
                     </label>
                     <select
                       required
@@ -657,14 +640,12 @@ export default function SubscriptionsPage() {
                       onChange={(e) => setSubFormData({ ...subFormData, planId: e.target.value })}
                       className={inputClasses}
                     >
-                      <option value="">Choose a plan...</option>
-                      {plans
-                        .filter((p) => p.status === "active")
-                        .map((plan) => (
-                          <option key={plan.id} value={plan.id}>
-                            {plan.name} - ${plan.price}/{plan.interval}
-                          </option>
-                        ))}
+                      <option value="">Select plan</option>
+                      {plans.map((plan) => (
+                        <option key={plan.id} value={plan.id}>
+                          {plan.name} - ${plan.price}/{plan.interval}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -683,15 +664,11 @@ export default function SubscriptionsPage() {
                     <button
                       type="button"
                       onClick={() => setShowSubModal(false)}
-                      className="px-5 py-2.5 text-slate-600 font-medium hover:text-slate-900 transition-colors"
+                      className="btn btn-outline btn-md"
                     >
                       Cancel
                     </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="px-6 py-2.5 bg-[#3B82F6] text-white rounded-xl font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
-                    >
+                    <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-md">
                       {isSubmitting ? "Creating..." : "Create Subscription"}
                     </button>
                   </div>
@@ -701,6 +678,6 @@ export default function SubscriptionsPage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

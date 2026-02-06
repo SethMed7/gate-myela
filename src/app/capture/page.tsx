@@ -1,6 +1,6 @@
 "use client";
 
-import Header from "@/components/Header";
+import PageHeader from "@/components/PageHeader";
 import TransactionForm from "@/components/TransactionForm";
 
 const pendingAuths = [
@@ -11,9 +11,13 @@ const pendingAuths = [
 
 export default function CapturePage() {
   return (
-    <>
-      <Header title="Capture" />
-      <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 overflow-auto bg-[var(--color-shell)]">
+      <div className="page-shell">
+        <PageHeader
+          title="Capture"
+          subtitle="Capture funds from a previously authorized transaction."
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <TransactionForm
             type="capture"
@@ -24,30 +28,31 @@ export default function CapturePage() {
             showTransactionId={true}
           />
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h3 className="font-semibold text-slate-800 mb-4">Pending Authorizations</h3>
-            <div className="overflow-x-auto">
+          <div className="panel overflow-hidden">
+            <div className="panel-header">
+              <h3 className="font-semibold text-slate-900">Pending Authorizations</h3>
+              <p className="text-sm text-slate-500">Capture within the authorization window.</p>
+            </div>
+            <div className="panel-body overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="text-left text-sm text-slate-600 border-b border-slate-200">
-                    <th className="pb-3 font-medium">Transaction ID</th>
-                    <th className="pb-3 font-medium">Date</th>
-                    <th className="pb-3 font-medium">Amount</th>
-                    <th className="pb-3 font-medium">Card</th>
-                    <th className="pb-3 font-medium">Action</th>
+                  <tr className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/60">
+                    <th className="py-3 px-2">Transaction ID</th>
+                    <th className="py-3 px-2">Date</th>
+                    <th className="py-3 px-2">Amount</th>
+                    <th className="py-3 px-2">Card</th>
+                    <th className="py-3 px-2 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {pendingAuths.map((auth) => (
                     <tr key={auth.id} className="border-b border-slate-100 last:border-0">
-                      <td className="py-3 text-sm font-mono text-slate-700">{auth.id}</td>
-                      <td className="py-3 text-sm text-slate-600">{auth.date}</td>
-                      <td className="py-3 text-sm font-medium text-slate-800">{auth.amount}</td>
-                      <td className="py-3 text-sm text-slate-600">{auth.card}</td>
-                      <td className="py-3">
-                        <button className="px-3 py-1.5 bg-[#3b82f6] text-white text-xs font-medium rounded-lg hover:bg-[#2563eb] transition-colors">
-                          Capture
-                        </button>
+                      <td className="py-3 px-2 text-sm font-mono text-slate-700">{auth.id}</td>
+                      <td className="py-3 px-2 text-sm text-slate-600">{auth.date}</td>
+                      <td className="py-3 px-2 text-sm font-medium text-slate-800">{auth.amount}</td>
+                      <td className="py-3 px-2 text-sm text-slate-600">{auth.card}</td>
+                      <td className="py-3 px-2 text-right">
+                        <button className="btn btn-primary btn-sm">Capture</button>
                       </td>
                     </tr>
                   ))}
@@ -57,6 +62,6 @@ export default function CapturePage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

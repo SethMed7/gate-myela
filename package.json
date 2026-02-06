@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "PORT=${PORT:-3000} next start -p $PORT",
+    "lint": "eslint",
+    "test:ui": "playwright test"
   },
   "dependencies": {
     "lucide-react": "^0.563.0",
@@ -16,6 +17,7 @@
     "recharts": "^3.7.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

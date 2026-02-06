@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/Header";
+import PageHeader from "@/components/PageHeader";
 import {
   Plus,
   Search,
-  MoreHorizontal,
   Mail,
   Phone,
   CreditCard,
@@ -146,7 +145,7 @@ export default function CustomersPage() {
       }),
     };
 
-    setCustomers([newCustomer, ...customers]);
+    setCustomers((prev) => [newCustomer, ...prev]);
     setIsSubmitting(false);
     setShowSuccess(true);
 
@@ -166,81 +165,79 @@ export default function CustomersPage() {
     }, 1500);
   };
 
-  const inputClasses =
-    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] focus:bg-white transition-all";
+  const inputClasses = "input-base";
 
   return (
-    <>
-      <Header title="Customers" subtitle="Manage your customer database" />
-      <div className="flex-1 p-6 overflow-auto bg-slate-50/50">
-        {/* Header Actions */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search customers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-80 pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all"
-            />
-          </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#3B82F6] text-white rounded-xl font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-500/20 btn-press"
-          >
-            <Plus className="w-5 h-5" />
-            Add Customer
-          </button>
-        </div>
+    <div className="flex-1 overflow-auto bg-[var(--color-shell)]">
+      <div className="page-shell">
+        <PageHeader
+          title="Customers"
+          subtitle="Manage your customer database and saved payment methods."
+          actions={
+            <>
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search customers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input-base pl-9 w-64"
+                />
+              </div>
+              <button onClick={() => setShowModal(true)} className="btn btn-primary btn-md">
+                <Plus className="w-4 h-4" />
+                Add Customer
+              </button>
+            </>
+          }
+        />
 
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Total Customers</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">{customers.length}</div>
+            <div className="text-3xl font-semibold text-slate-900 mt-1">{customers.length}</div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">With Payment Method</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">
+            <div className="text-3xl font-semibold text-slate-900 mt-1">
               {customers.filter((c) => c.cardLast4).length}
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Total Revenue</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">$48,230</div>
+            <div className="text-3xl font-semibold text-slate-900 mt-1">$48,230</div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Avg. Transaction</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">$268</div>
+            <div className="text-3xl font-semibold text-slate-900 mt-1">$268</div>
           </div>
         </div>
 
-        {/* Customer List */}
-        <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h3 className="font-bold text-slate-900">All Customers</h3>
+        <div className="panel overflow-hidden">
+          <div className="panel-header">
+            <h3 className="font-semibold text-slate-900">All Customers</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">
-                  <th className="px-6 py-4">Customer</th>
-                  <th className="px-6 py-4">Contact</th>
-                  <th className="px-6 py-4">Payment Method</th>
-                  <th className="px-6 py-4">Total Spent</th>
-                  <th className="px-6 py-4">Transactions</th>
-                  <th className="px-6 py-4">Created</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+              <thead className="bg-slate-50/60">
+                <tr>
+                  <th className="px-6 py-4 table-head">Customer</th>
+                  <th className="px-6 py-4 table-head">Contact</th>
+                  <th className="px-6 py-4 table-head">Payment Method</th>
+                  <th className="px-6 py-4 table-head">Total Spent</th>
+                  <th className="px-6 py-4 table-head">Transactions</th>
+                  <th className="px-6 py-4 table-head">Created</th>
+                  <th className="px-6 py-4 table-head text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredCustomers.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={customer.id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#3B82F6]/10 flex items-center justify-center">
-                          <User className="w-5 h-5 text-[#3B82F6]" />
+                        <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-soft)] flex items-center justify-center">
+                          <User className="w-5 h-5 text-[var(--color-primary)]" />
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">{customer.name}</div>
@@ -263,6 +260,12 @@ export default function CustomersPage() {
                           <Phone className="w-3.5 h-3.5 text-slate-400" />
                           {customer.phone}
                         </div>
+                        {customer.address && (
+                          <div className="flex items-center gap-2 text-xs text-slate-400">
+                            <MapPin className="w-3 h-3" />
+                            {customer.address}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -290,13 +293,13 @@ export default function CustomersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button className="p-2 text-slate-400 hover:text-[#3B82F6] hover:bg-blue-50 rounded-lg transition-all">
+                        <button className="btn-icon" aria-label="Charge customer">
                           <CreditCard className="w-4 h-4" />
                         </button>
-                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+                        <button className="btn-icon" aria-label="Edit customer">
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                        <button className="btn-icon hover:text-red-500" aria-label="Delete customer">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -309,7 +312,6 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      {/* Add Customer Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -318,16 +320,17 @@ export default function CustomersPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 mb-4">
                   <CheckCircle className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Customer Added</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Customer Added</h3>
                 <p className="text-slate-500">The customer has been added successfully.</p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between p-6 border-b border-slate-100">
-                  <h2 className="text-xl font-bold text-slate-900">Add New Customer</h2>
+                  <h2 className="text-xl font-semibold text-slate-900">Add New Customer</h2>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+                    className="btn-icon"
+                    aria-label="Close modal"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -455,7 +458,7 @@ export default function CustomersPage() {
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
-                                cardCvv: e.target.value.replace(/\D/g, "").slice(0, 4),
+                                cardCvv: e.target.value.replace(/\\D/g, "").slice(0, 4),
                               })
                             }
                             className={`${inputClasses} font-mono`}
@@ -471,15 +474,11 @@ export default function CustomersPage() {
                     <button
                       type="button"
                       onClick={() => setShowModal(false)}
-                      className="px-5 py-2.5 text-slate-600 font-medium hover:text-slate-900 transition-colors"
+                      className="btn btn-outline btn-md"
                     >
                       Cancel
                     </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="px-6 py-2.5 bg-[#3B82F6] text-white rounded-xl font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
-                    >
+                    <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-md">
                       {isSubmitting ? "Adding..." : "Add Customer"}
                     </button>
                   </div>
@@ -489,6 +488,6 @@ export default function CustomersPage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

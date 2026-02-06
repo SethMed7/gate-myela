@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/Header";
+import PageHeader from "@/components/PageHeader";
 import {
   Plus,
   Search,
   Send,
   Download,
-  MoreHorizontal,
   X,
   User,
   Calendar,
@@ -156,7 +155,8 @@ export default function InvoicesPage() {
       }),
       isRecurring: formData.isRecurring,
       recurringInterval: formData.isRecurring
-        ? formData.recurringInterval.charAt(0).toUpperCase() + formData.recurringInterval.slice(1)
+        ? formData.recurringInterval.charAt(0).toUpperCase() +
+          formData.recurringInterval.slice(1)
         : undefined,
       items,
       createdAt: new Date().toLocaleDateString("en-US", {
@@ -166,7 +166,7 @@ export default function InvoicesPage() {
       }),
     };
 
-    setInvoices([newInvoice, ...invoices]);
+    setInvoices((prev) => [newInvoice, ...prev]);
     setIsSubmitting(false);
     setShowSuccess(true);
 
@@ -184,79 +184,77 @@ export default function InvoicesPage() {
     }, 1500);
   };
 
-  const inputClasses =
-    "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] focus:bg-white transition-all";
+  const inputClasses = "input-base";
 
   return (
-    <>
-      <Header title="Invoices" subtitle="Create and manage invoices" />
-      <div className="flex-1 p-6 overflow-auto bg-slate-50/50">
-        {/* Header Actions */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search invoices..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-80 pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all"
-            />
-          </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#3B82F6] text-white rounded-xl font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-500/20 btn-press"
-          >
-            <Plus className="w-5 h-5" />
-            Create Invoice
-          </button>
-        </div>
+    <div className="flex-1 overflow-auto bg-[var(--color-shell)]">
+      <div className="page-shell">
+        <PageHeader
+          title="Invoices"
+          subtitle="Create, send, and manage customer invoices."
+          actions={
+            <>
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search invoices..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input-base pl-9 w-64"
+                />
+              </div>
+              <button onClick={() => setShowModal(true)} className="btn btn-primary btn-md">
+                <Plus className="w-4 h-4" />
+                Create Invoice
+              </button>
+            </>
+          }
+        />
 
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Total Outstanding</div>
-            <div className="text-3xl font-bold text-slate-900 mt-1">$12,250</div>
+            <div className="text-3xl font-semibold text-slate-900 mt-1">$12,250</div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Paid This Month</div>
-            <div className="text-3xl font-bold text-emerald-600 mt-1">$28,450</div>
+            <div className="text-3xl font-semibold text-emerald-600 mt-1">$28,450</div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Overdue</div>
-            <div className="text-3xl font-bold text-red-600 mt-1">$8,750</div>
+            <div className="text-3xl font-semibold text-red-600 mt-1">$8,750</div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/60 p-5">
+          <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Recurring Active</div>
-            <div className="text-3xl font-bold text-[#3B82F6] mt-1">
+            <div className="text-3xl font-semibold text-[var(--color-primary)] mt-1">
               {invoices.filter((i) => i.isRecurring).length}
             </div>
           </div>
         </div>
 
-        {/* Invoice List */}
-        <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h3 className="font-bold text-slate-900">All Invoices</h3>
+        <div className="panel overflow-hidden">
+          <div className="panel-header">
+            <h3 className="font-semibold text-slate-900">All Invoices</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">
-                  <th className="px-6 py-4">Invoice</th>
-                  <th className="px-6 py-4">Customer</th>
-                  <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Due Date</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+              <thead className="bg-slate-50/60">
+                <tr>
+                  <th className="px-6 py-4 table-head">Invoice</th>
+                  <th className="px-6 py-4 table-head">Customer</th>
+                  <th className="px-6 py-4 table-head">Amount</th>
+                  <th className="px-6 py-4 table-head">Status</th>
+                  <th className="px-6 py-4 table-head">Due Date</th>
+                  <th className="px-6 py-4 table-head">Type</th>
+                  <th className="px-6 py-4 table-head text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredInvoices.map((invoice) => {
                   const StatusIcon = statusConfig[invoice.status].icon;
                   return (
-                    <tr key={invoice.id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr key={invoice.id} className="hover:bg-slate-50/60 transition-colors">
                       <td className="px-6 py-4">
                         <span className="font-mono text-sm font-semibold text-slate-900">
                           {invoice.id}
@@ -269,7 +267,7 @@ export default function InvoicesPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-bold text-slate-900">{invoice.amount}</span>
+                        <span className="font-semibold text-slate-900">{invoice.amount}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span
@@ -296,18 +294,18 @@ export default function InvoicesPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1">
-                          <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+                          <button className="btn-icon" aria-label="View invoice">
                             <Eye className="w-4 h-4" />
                           </button>
                           {invoice.status === "draft" && (
-                            <button className="p-2 text-slate-400 hover:text-[#3B82F6] hover:bg-blue-50 rounded-lg transition-all">
+                            <button className="btn-icon" aria-label="Send invoice">
                               <Send className="w-4 h-4" />
                             </button>
                           )}
-                          <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+                          <button className="btn-icon" aria-label="Download invoice">
                             <Download className="w-4 h-4" />
                           </button>
-                          <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                          <button className="btn-icon hover:text-red-500" aria-label="Delete invoice">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -321,7 +319,6 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      {/* Create Invoice Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -330,22 +327,18 @@ export default function InvoicesPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 mb-4">
                   <CheckCircle className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Invoice Created</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Invoice Created</h3>
                 <p className="text-slate-500">The invoice has been created as a draft.</p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between p-6 border-b border-slate-100">
-                  <h2 className="text-xl font-bold text-slate-900">Create Invoice</h2>
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
-                  >
+                  <h2 className="text-xl font-semibold text-slate-900">Create Invoice</h2>
+                  <button onClick={() => setShowModal(false)} className="btn-icon" aria-label="Close modal">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                  {/* Customer Info */}
                   <div>
                     <div className="flex items-center gap-2 mb-4">
                       <User className="w-4 h-4 text-slate-400" />
@@ -383,18 +376,13 @@ export default function InvoicesPage() {
                     </div>
                   </div>
 
-                  {/* Items */}
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-slate-400" />
                         <h3 className="font-semibold text-slate-800">Line Items</h3>
                       </div>
-                      <button
-                        type="button"
-                        onClick={addItem}
-                        className="text-sm font-medium text-[#3B82F6] hover:text-[#2563eb]"
-                      >
+                      <button type="button" onClick={addItem} className="text-sm font-medium text-[var(--color-primary)]">
                         + Add Item
                       </button>
                     </div>
@@ -429,7 +417,9 @@ export default function InvoicesPage() {
                               step="0.01"
                               placeholder="Rate"
                               value={item.rate || ""}
-                              onChange={(e) => updateItem(index, "rate", parseFloat(e.target.value) || 0)}
+                              onChange={(e) =>
+                                updateItem(index, "rate", parseFloat(e.target.value) || 0)
+                              }
                               className={`${inputClasses} pl-7`}
                             />
                           </div>
@@ -440,7 +430,8 @@ export default function InvoicesPage() {
                             <button
                               type="button"
                               onClick={() => removeItem(index)}
-                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                              className="btn-icon hover:text-red-500"
+                              aria-label="Remove item"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -451,14 +442,13 @@ export default function InvoicesPage() {
                     <div className="flex justify-end mt-4 pt-4 border-t border-slate-100">
                       <div className="text-right">
                         <span className="text-sm text-slate-500">Total</span>
-                        <div className="text-2xl font-bold text-slate-900">
+                        <div className="text-2xl font-semibold text-slate-900">
                           ${calculateTotal().toLocaleString("en-US", { minimumFractionDigits: 2 })}
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Due Date & Recurring */}
                   <div>
                     <div className="flex items-center gap-2 mb-4">
                       <Calendar className="w-4 h-4 text-slate-400" />
@@ -489,7 +479,7 @@ export default function InvoicesPage() {
                               onChange={(e) =>
                                 setFormData({ ...formData, isRecurring: e.target.checked })
                               }
-                              className="w-4 h-4 rounded border-slate-300 text-[#3B82F6] focus:ring-[#3B82F6]"
+                              className="w-4 h-4 rounded border-slate-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
                             />
                             <span className="text-sm text-slate-700">Make this recurring</span>
                           </label>
@@ -522,15 +512,11 @@ export default function InvoicesPage() {
                     <button
                       type="button"
                       onClick={() => setShowModal(false)}
-                      className="px-5 py-2.5 text-slate-600 font-medium hover:text-slate-900 transition-colors"
+                      className="btn btn-outline btn-md"
                     >
                       Cancel
                     </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="px-6 py-2.5 bg-[#3B82F6] text-white rounded-xl font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
-                    >
+                    <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-md">
                       {isSubmitting ? "Creating..." : "Create Invoice"}
                     </button>
                   </div>
@@ -540,6 +526,6 @@ export default function InvoicesPage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

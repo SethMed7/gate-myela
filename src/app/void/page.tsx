@@ -1,6 +1,6 @@
 "use client";
 
-import Header from "@/components/Header";
+import PageHeader from "@/components/PageHeader";
 import TransactionForm from "@/components/TransactionForm";
 
 const unsettledTxns = [
@@ -10,9 +10,13 @@ const unsettledTxns = [
 
 export default function VoidPage() {
   return (
-    <>
-      <Header title="Void" />
-      <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 overflow-auto bg-[var(--color-shell)]">
+      <div className="page-shell">
+        <PageHeader
+          title="Void"
+          subtitle="Void unsettled transactions before they are captured."
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <TransactionForm
             type="void"
@@ -25,40 +29,43 @@ export default function VoidPage() {
             isDanger={true}
           />
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h3 className="font-semibold text-slate-800 mb-4">Recent Unsettled Transactions</h3>
-            <div className="overflow-x-auto">
+          <div className="panel overflow-hidden">
+            <div className="panel-header">
+              <h3 className="font-semibold text-slate-900">Recent Unsettled Transactions</h3>
+              <p className="text-sm text-slate-500">Only unsettled items are eligible for void.</p>
+            </div>
+            <div className="panel-body overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="text-left text-sm text-slate-600 border-b border-slate-200">
-                    <th className="pb-3 font-medium">Transaction ID</th>
-                    <th className="pb-3 font-medium">Date</th>
-                    <th className="pb-3 font-medium">Type</th>
-                    <th className="pb-3 font-medium">Amount</th>
-                    <th className="pb-3 font-medium">Card</th>
-                    <th className="pb-3 font-medium">Action</th>
+                  <tr className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/60">
+                    <th className="py-3 px-2">Transaction ID</th>
+                    <th className="py-3 px-2">Date</th>
+                    <th className="py-3 px-2">Type</th>
+                    <th className="py-3 px-2">Amount</th>
+                    <th className="py-3 px-2">Card</th>
+                    <th className="py-3 px-2 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {unsettledTxns.map((txn) => (
                     <tr key={txn.id} className="border-b border-slate-100 last:border-0">
-                      <td className="py-3 text-sm font-mono text-slate-700">{txn.id}</td>
-                      <td className="py-3 text-sm text-slate-600">{txn.date}</td>
-                      <td className="py-3">
-                        <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
-                          txn.type === "Sale"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-green-100 text-green-700"
-                        }`}>
+                      <td className="py-3 px-2 text-sm font-mono text-slate-700">{txn.id}</td>
+                      <td className="py-3 px-2 text-sm text-slate-600">{txn.date}</td>
+                      <td className="py-3 px-2">
+                        <span
+                          className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                            txn.type === "Sale"
+                              ? "bg-blue-50 text-blue-700"
+                              : "bg-emerald-50 text-emerald-700"
+                          }`}
+                        >
                           {txn.type}
                         </span>
                       </td>
-                      <td className="py-3 text-sm font-medium text-slate-800">{txn.amount}</td>
-                      <td className="py-3 text-sm text-slate-600">{txn.card}</td>
-                      <td className="py-3">
-                        <button className="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition-colors">
-                          Void
-                        </button>
+                      <td className="py-3 px-2 text-sm font-medium text-slate-800">{txn.amount}</td>
+                      <td className="py-3 px-2 text-sm text-slate-600">{txn.card}</td>
+                      <td className="py-3 px-2 text-right">
+                        <button className="btn btn-danger btn-sm">Void</button>
                       </td>
                     </tr>
                   ))}
@@ -68,6 +75,6 @@ export default function VoidPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
