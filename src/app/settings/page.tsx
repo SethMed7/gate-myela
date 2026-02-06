@@ -337,7 +337,7 @@ export default function SettingsPage() {
                     </div>
                     {settings.surchargeEnabled && (
                       <>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                               Surcharge Rate
@@ -523,7 +523,7 @@ export default function SettingsPage() {
                       className={inputClasses}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-2">Account Type</label>
                       <select
@@ -546,7 +546,7 @@ export default function SettingsPage() {
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-2">Account Number</label>
                       <input

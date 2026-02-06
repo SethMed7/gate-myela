@@ -52,7 +52,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[240px] bg-[var(--color-sidebar)] text-white flex flex-col sticky top-[var(--topbar-height)] h-[calc(100vh-var(--topbar-height))]">
+    <aside className="w-[220px] sm:w-[240px] bg-[var(--color-sidebar)] text-white flex flex-col sticky top-[var(--topbar-height)] h-[calc(100vh-var(--topbar-height))]">
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
         {navSections.map((section) => (
           <div key={section.title} className="mb-6">

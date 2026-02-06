@@ -116,7 +116,7 @@ export default function ReportsPage() {
           subtitle="Review transaction history, status trends, and exports."
         />
 
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
           {summary.map((item, index) => (
             <div
               key={item.label}
@@ -191,7 +191,7 @@ export default function ReportsPage() {
               <input
                 type="text"
                 placeholder="Search by ID, amount, or card..."
-                className="input-base pl-9 w-72"
+                className="input-base pl-9 w-full sm:w-72"
               />
             </div>
           </div>

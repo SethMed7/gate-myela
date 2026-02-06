@@ -19,7 +19,9 @@ export default function PageHeader({ title, subtitle, actions, meta }: PageHeade
         )}
         {meta && <div className="mt-2 text-xs text-slate-400">{meta}</div>}
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      {actions && (
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">{actions}</div>
+      )}
     </div>
   );
 }

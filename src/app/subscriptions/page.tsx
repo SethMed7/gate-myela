@@ -263,7 +263,7 @@ export default function SubscriptionsPage() {
                   placeholder={`Search ${activeTab}...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input-base pl-9 w-56"
+                  className="input-base pl-9 w-full sm:w-56"
                 />
               </div>
               <button
@@ -279,7 +279,7 @@ export default function SubscriptionsPage() {
           }
         />
 
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
           <div className="panel p-5 bg-gradient-to-br from-[#0b0b0b] to-[#1a1a1a] text-white">
             <div className="text-sm font-medium text-white/60">Monthly Recurring Revenue</div>
             <div className="text-3xl font-semibold mt-1">${mrr.toLocaleString()}</div>
@@ -495,7 +495,7 @@ export default function SubscriptionsPage() {
                       placeholder="Brief description of the plan"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-2">
                         Price *

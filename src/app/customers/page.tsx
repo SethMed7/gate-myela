@@ -182,7 +182,7 @@ export default function CustomersPage() {
                   placeholder="Search customers..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input-base pl-9 w-64"
+                  className="input-base pl-9 w-full sm:w-64"
                 />
               </div>
               <button onClick={() => setShowModal(true)} className="btn btn-primary btn-md">
@@ -193,7 +193,7 @@ export default function CustomersPage() {
           }
         />
 
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
           <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Total Customers</div>
             <div className="text-3xl font-semibold text-slate-900 mt-1">{customers.length}</div>
@@ -355,7 +355,7 @@ export default function CustomersPage() {
                           placeholder="John Smith"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-semibold text-slate-700 mb-2">
                             Email *
@@ -432,7 +432,7 @@ export default function CustomersPage() {
                           maxLength={19}
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-semibold text-slate-700 mb-2">
                             Expiry Date

@@ -201,7 +201,7 @@ export default function InvoicesPage() {
                   placeholder="Search invoices..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input-base pl-9 w-64"
+                  className="input-base pl-9 w-full sm:w-64"
                 />
               </div>
               <button onClick={() => setShowModal(true)} className="btn btn-primary btn-md">
@@ -212,7 +212,7 @@ export default function InvoicesPage() {
           }
         />
 
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
           <div className="panel p-5">
             <div className="text-sm font-medium text-slate-500">Total Outstanding</div>
             <div className="text-3xl font-semibold text-slate-900 mt-1">$12,250</div>
@@ -344,7 +344,7 @@ export default function InvoicesPage() {
                       <User className="w-4 h-4 text-slate-400" />
                       <h3 className="font-semibold text-slate-800">Customer Information</h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">
                           Customer Name *
@@ -454,7 +454,7 @@ export default function InvoicesPage() {
                       <Calendar className="w-4 h-4 text-slate-400" />
                       <h3 className="font-semibold text-slate-800">Schedule</h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">
                           Due Date *

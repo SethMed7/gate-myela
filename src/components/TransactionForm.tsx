@@ -249,7 +249,7 @@ export default function TransactionForm({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClasses}>Expiry Date</label>
                   <input
@@ -303,7 +303,7 @@ export default function TransactionForm({
               </div>
             </div>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClasses}>Account Type</label>
                   <select
@@ -347,7 +347,7 @@ export default function TransactionForm({
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelClasses}>Routing Number</label>
                   <input
@@ -397,7 +397,7 @@ export default function TransactionForm({
                 {showTransactionId ? "Amount" : "Transaction Details"}
               </h3>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelClasses}>
                   {type === "refund" ? "Refund Amount" : type === "capture" ? "Capture Amount" : "Amount"}
@@ -472,7 +472,7 @@ export default function TransactionForm({
 
             {showLevel23 && (
               <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className={labelClasses}>PO Number</label>
                     <input
@@ -506,7 +506,7 @@ export default function TransactionForm({
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className={labelClasses}>Customer Code</label>
                     <input
@@ -532,7 +532,7 @@ export default function TransactionForm({
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
                     <label className={labelClasses}>Ship From Zip</label>
                     <input
