@@ -154,243 +154,249 @@ export default function SettingsPage() {
 
           <div className="flex-1">
             {activeTab === "payment" && (
-              <div className="max-w-2xl space-y-6">
-                <div className="panel overflow-hidden">
-                  <div className="panel-header flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-amber-50">
-                      <Percent className="w-5 h-5 text-amber-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900">Tax Settings</h3>
-                      <p className="text-sm text-slate-500">Configure tax calculation</p>
-                    </div>
-                  </div>
-                  <div className="panel-body space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-slate-900">Enable Tax</div>
-                        <div className="text-sm text-slate-500">Add tax to transactions</div>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={settings.taxEnabled}
-                          onChange={(e) =>
-                            setSettings({ ...settings, taxEnabled: e.target.checked })
-                          }
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
-                      </label>
-                    </div>
-                    {settings.taxEnabled && (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Tax Rate (%)
-                          </label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={settings.taxRate}
-                            onChange={(e) =>
-                              setSettings({ ...settings, taxRate: e.target.value })
-                            }
-                            className={`${inputClasses} max-w-[150px]`}
-                          />
+              <div className="w-full">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <div className="space-y-6">
+                    <div className="panel overflow-hidden">
+                      <div className="panel-header flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-amber-50">
+                          <Percent className="w-5 h-5 text-amber-600" />
                         </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900">Tax Settings</h3>
+                          <p className="text-sm text-slate-500">Configure tax calculation</p>
+                        </div>
+                      </div>
+                      <div className="panel-body space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-slate-900">Tax Included in Price</div>
-                            <div className="text-sm text-slate-500">Prices already include tax</div>
+                            <div className="font-medium text-slate-900">Enable Tax</div>
+                            <div className="text-sm text-slate-500">Add tax to transactions</div>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={settings.taxIncluded}
+                              checked={settings.taxEnabled}
                               onChange={(e) =>
-                                setSettings({ ...settings, taxIncluded: e.target.checked })
+                                setSettings({ ...settings, taxEnabled: e.target.checked })
                               }
                               className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
                           </label>
                         </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div className="panel overflow-hidden">
-                  <div className="panel-header flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-emerald-50">
-                      <HandCoins className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900">Tip Settings</h3>
-                      <p className="text-sm text-slate-500">Configure tipping options</p>
-                    </div>
-                  </div>
-                  <div className="panel-body space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-slate-900">Enable Tipping</div>
-                        <div className="text-sm text-slate-500">Allow customers to add tips</div>
+                        {settings.taxEnabled && (
+                          <>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Tax Rate (%)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={settings.taxRate}
+                                onChange={(e) =>
+                                  setSettings({ ...settings, taxRate: e.target.value })
+                                }
+                                className={`${inputClasses} max-w-[150px]`}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="font-medium text-slate-900">Tax Included in Price</div>
+                                <div className="text-sm text-slate-500">Prices already include tax</div>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={settings.taxIncluded}
+                                  onChange={(e) =>
+                                    setSettings({ ...settings, taxIncluded: e.target.checked })
+                                  }
+                                  className="sr-only peer"
+                                />
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
+                              </label>
+                            </div>
+                          </>
+                        )}
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={settings.tipEnabled}
-                          onChange={(e) =>
-                            setSettings({ ...settings, tipEnabled: e.target.checked })
-                          }
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
-                      </label>
                     </div>
-                    {settings.tipEnabled && (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Default Tip (%)
-                          </label>
-                          <input
-                            type="number"
-                            value={settings.defaultTip}
-                            onChange={(e) =>
-                              setSettings({ ...settings, defaultTip: e.target.value })
-                            }
-                            className={`${inputClasses} max-w-[150px]`}
-                          />
+
+                    <div className="panel overflow-hidden">
+                      <div className="panel-header flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-emerald-50">
+                          <HandCoins className="w-5 h-5 text-emerald-600" />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Tip Options (comma separated)
-                          </label>
-                          <input
-                            type="text"
-                            value={settings.tipOptions}
-                            onChange={(e) =>
-                              setSettings({ ...settings, tipOptions: e.target.value })
-                            }
-                            className={inputClasses}
-                            placeholder="15,18,20,25"
-                          />
-                          <p className="text-xs text-slate-400 mt-1">
-                            Percentages shown to customers
-                          </p>
+                          <h3 className="font-semibold text-slate-900">Tip Settings</h3>
+                          <p className="text-sm text-slate-500">Configure tipping options</p>
                         </div>
+                      </div>
+                      <div className="panel-body space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-slate-900">Calculate Tip on Tax</div>
+                            <div className="font-medium text-slate-900">Enable Tipping</div>
+                            <div className="text-sm text-slate-500">Allow customers to add tips</div>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={settings.tipEnabled}
+                              onChange={(e) =>
+                                setSettings({ ...settings, tipEnabled: e.target.checked })
+                              }
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
+                          </label>
+                        </div>
+                        {settings.tipEnabled && (
+                          <>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Default Tip (%)
+                              </label>
+                              <input
+                                type="number"
+                                value={settings.defaultTip}
+                                onChange={(e) =>
+                                  setSettings({ ...settings, defaultTip: e.target.value })
+                                }
+                                className={`${inputClasses} max-w-[150px]`}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Tip Options (comma separated)
+                              </label>
+                              <input
+                                type="text"
+                                value={settings.tipOptions}
+                                onChange={(e) =>
+                                  setSettings({ ...settings, tipOptions: e.target.value })
+                                }
+                                className={inputClasses}
+                                placeholder="15,18,20,25"
+                              />
+                              <p className="text-xs text-slate-400 mt-1">
+                                Percentages shown to customers
+                              </p>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="font-medium text-slate-900">Calculate Tip on Tax</div>
+                                <div className="text-sm text-slate-500">
+                                  Include tax in tip calculation
+                                </div>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={settings.tipOnTax}
+                                  onChange={(e) =>
+                                    setSettings({ ...settings, tipOnTax: e.target.checked })
+                                  }
+                                  className="sr-only peer"
+                                />
+                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
+                              </label>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="panel overflow-hidden">
+                      <div className="panel-header flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-purple-50">
+                          <CreditCard className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900">Surcharge Settings</h3>
+                          <p className="text-sm text-slate-500">Configure processing surcharges</p>
+                        </div>
+                      </div>
+                      <div className="panel-body space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="font-medium text-slate-900">Enable Surcharge</div>
                             <div className="text-sm text-slate-500">
-                              Include tax in tip calculation
+                              Add surcharge to card transactions
                             </div>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={settings.tipOnTax}
+                              checked={settings.surchargeEnabled}
                               onChange={(e) =>
-                                setSettings({ ...settings, tipOnTax: e.target.checked })
+                                setSettings({ ...settings, surchargeEnabled: e.target.checked })
                               }
                               className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
                           </label>
                         </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div className="panel overflow-hidden">
-                  <div className="panel-header flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-purple-50">
-                      <CreditCard className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900">Surcharge Settings</h3>
-                      <p className="text-sm text-slate-500">Configure processing surcharges</p>
-                    </div>
-                  </div>
-                  <div className="panel-body space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-slate-900">Enable Surcharge</div>
-                        <div className="text-sm text-slate-500">
-                          Add surcharge to card transactions
-                        </div>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={settings.surchargeEnabled}
-                          onChange={(e) =>
-                            setSettings({ ...settings, surchargeEnabled: e.target.checked })
-                          }
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
-                      </label>
-                    </div>
-                    {settings.surchargeEnabled && (
-                      <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Surcharge Rate
-                            </label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={settings.surchargeRate}
-                              onChange={(e) =>
-                                setSettings({ ...settings, surchargeRate: e.target.value })
-                              }
-                              className={inputClasses}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Type
-                            </label>
-                            <select
-                              value={settings.surchargeType}
-                              onChange={(e) =>
-                                setSettings({ ...settings, surchargeType: e.target.value })
-                              }
-                              className={inputClasses}
-                            >
-                              <option value="percentage">Percentage (%)</option>
-                              <option value="fixed">Fixed Amount ($)</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
-                          <div className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                            <div className="text-sm text-amber-800">
-                              <strong>Important:</strong> Surcharging credit cards is regulated.
-                              Ensure compliance with card network rules and state laws before
-                              enabling.
+                        {settings.surchargeEnabled && (
+                          <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                  Surcharge Rate
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  value={settings.surchargeRate}
+                                  onChange={(e) =>
+                                    setSettings({ ...settings, surchargeRate: e.target.value })
+                                  }
+                                  className={inputClasses}
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                  Type
+                                </label>
+                                <select
+                                  value={settings.surchargeType}
+                                  onChange={(e) =>
+                                    setSettings({ ...settings, surchargeType: e.target.value })
+                                  }
+                                  className={inputClasses}
+                                >
+                                  <option value="percentage">Percentage (%)</option>
+                                  <option value="fixed">Fixed Amount ($)</option>
+                                </select>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+                            <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                              <div className="flex items-start gap-3">
+                                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                                <div className="text-sm text-amber-800">
+                                  <strong>Important:</strong> Surcharging credit cards is regulated.
+                                  Ensure compliance with card network rules and state laws before
+                                  enabling.
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
 
-                <div className="flex justify-end">
-                  <button className="btn btn-primary btn-md">Save Settings</button>
+                    <div className="flex justify-end">
+                      <button className="btn btn-primary btn-md">Save Settings</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
             {activeTab === "banking" && (
-              <div className="max-w-2xl space-y-6">
+              <div className="w-full xl:max-w-5xl space-y-6">
                 <div className="panel overflow-hidden">
                   <div className="panel-header flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -474,7 +480,7 @@ export default function SettingsPage() {
             {(activeTab === "notifications" ||
               activeTab === "team" ||
               activeTab === "security") && (
-              <div className="max-w-2xl">
+              <div className="w-full xl:max-w-4xl">
                 <div className="panel p-12 text-center">
                   <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     {activeTab === "notifications" && <Bell className="w-8 h-8 text-slate-400" />}
