@@ -1,28 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
+import MultiMetricAreaChart from "@/components/charts/MultiMetricAreaChart";
+import { roleOptions, useRole, type AppRole } from "@/components/RoleContext";
 import {
-  ArrowUpRight,
-  ArrowDownRight,
   Activity,
-  ShieldCheck,
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  CheckCircle,
+  CircleAlert,
   CreditCard,
   FileText,
-  Zap,
+  ShieldCheck,
+  Sparkles,
+  Target,
   TrendingUp,
-  CheckCircle,
-  AlertTriangle,
+  UserPlus,
+  Zap,
 } from "lucide-react";
-import {
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
-} from "recharts";
 
 const volumeData = [
   { name: "Mon", volume: 32000, count: 142 },
@@ -34,19 +32,148 @@ const volumeData = [
   { name: "Sun", volume: 35000, count: 156 },
 ];
 
-const stats = [
-  { label: "Approved", value: "1,247", change: "+12.5%", positive: true, icon: ShieldCheck },
-  { label: "Declined", value: "43", change: "-8.3%", positive: false, icon: AlertTriangle },
-  { label: "Pending", value: "12", change: "+2", positive: true, icon: Activity },
-  { label: "Volume", value: "$89.4k", change: "+18.2%", positive: true, icon: TrendingUp },
-];
+const roleHero: Record<AppRole, { title: string; subtitle: string }> = {
+  owner: {
+    title: "Business performance and risk at a glance",
+    subtitle: "Track growth, approval trend, and margin-sensitive rules before they impact revenue.",
+  },
+  ops: {
+    title: "Operational queue and exceptions control",
+    subtitle: "Prioritize work items, clear pending issues, and keep daily payment flow stable.",
+  },
+  cashier: {
+    title: "Fast transaction handling workspace",
+    subtitle: "Run transactions quickly with minimal friction and clear next-step guidance.",
+  },
+  finance: {
+    title: "Settlement and reconciliation center",
+    subtitle: "Monitor settlement health, disputes, and high-value finance exceptions.",
+  },
+  agent: {
+    title: "Sales and onboarding motion cockpit",
+    subtitle: "Move prospects to activation with ROI proof and implementation readiness checks.",
+  },
+};
 
-const queue = [
-  { label: "Pre-Auth", value: "12", tone: "text-blue-600" },
-  { label: "Documents", value: "4", tone: "text-amber-600" },
-  { label: "Review", value: "2", tone: "text-emerald-600" },
-  { label: "At Risk", value: "1", tone: "text-red-500" },
-];
+const roleStats: Record<
+  AppRole,
+  { label: string; value: string; change: string; positive: boolean; icon: typeof Activity }[]
+> = {
+  owner: [
+    { label: "Gross Volume", value: "$489k", change: "+11.8%", positive: true, icon: TrendingUp },
+    { label: "Approval Rate", value: "94.4%", change: "+1.9%", positive: true, icon: ShieldCheck },
+    { label: "Rule Impact", value: "+$9.2k", change: "week", positive: true, icon: Sparkles },
+    { label: "Risk Alerts", value: "7", change: "-2", positive: true, icon: AlertTriangle },
+  ],
+  ops: [
+    { label: "Open Queue", value: "24", change: "-6", positive: true, icon: Activity },
+    { label: "Pending Captures", value: "12", change: "-2", positive: true, icon: CheckCircle },
+    { label: "Exceptions", value: "8", change: "+1", positive: false, icon: CircleAlert },
+    { label: "SLA", value: "98.6%", change: "+0.4%", positive: true, icon: ShieldCheck },
+  ],
+  cashier: [
+    { label: "Transactions", value: "132", change: "+14", positive: true, icon: CreditCard },
+    { label: "Avg Checkout", value: "42s", change: "-6s", positive: true, icon: Activity },
+    { label: "Declines", value: "5", change: "-2", positive: true, icon: AlertTriangle },
+    { label: "Pending Help", value: "2", change: "steady", positive: true, icon: CheckCircle },
+  ],
+  finance: [
+    { label: "Settled Today", value: "$82.4k", change: "+6.2%", positive: true, icon: TrendingUp },
+    { label: "Disputes", value: "3", change: "-1", positive: true, icon: AlertTriangle },
+    { label: "Refund Value", value: "$2.1k", change: "+0.3k", positive: false, icon: ArrowDownRight },
+    { label: "Reconciliation", value: "99.2%", change: "+0.8%", positive: true, icon: CheckCircle },
+  ],
+  agent: [
+    { label: "Active Pipeline", value: "19", change: "+4", positive: true, icon: Target },
+    { label: "This Week Wins", value: "6", change: "+2", positive: true, icon: UserPlus },
+    { label: "Avg Deal Size", value: "$1,240", change: "+$180", positive: true, icon: TrendingUp },
+    { label: "Onboarding Risk", value: "2", change: "-1", positive: true, icon: AlertTriangle },
+  ],
+};
+
+const queueByRole: Record<AppRole, { label: string; value: string; tone: string }[]> = {
+  owner: [
+    { label: "High Value", value: "6", tone: "text-blue-600" },
+    { label: "At Risk", value: "2", tone: "text-red-500" },
+    { label: "Rule Drafts", value: "3", tone: "text-amber-600" },
+    { label: "Approvals", value: "91", tone: "text-emerald-600" },
+  ],
+  ops: [
+    { label: "Pre-Auth", value: "12", tone: "text-blue-600" },
+    { label: "Documents", value: "4", tone: "text-amber-600" },
+    { label: "Review", value: "2", tone: "text-emerald-600" },
+    { label: "At Risk", value: "1", tone: "text-red-500" },
+  ],
+  cashier: [
+    { label: "Ready", value: "21", tone: "text-emerald-600" },
+    { label: "Help Needed", value: "2", tone: "text-amber-600" },
+    { label: "Declined", value: "5", tone: "text-red-500" },
+    { label: "Retry", value: "3", tone: "text-blue-600" },
+  ],
+  finance: [
+    { label: "Settlements", value: "9", tone: "text-blue-600" },
+    { label: "Disputes", value: "3", tone: "text-red-500" },
+    { label: "Chargebacks", value: "1", tone: "text-amber-600" },
+    { label: "Reconciled", value: "97", tone: "text-emerald-600" },
+  ],
+  agent: [
+    { label: "Demos", value: "7", tone: "text-blue-600" },
+    { label: "Proposals", value: "11", tone: "text-amber-600" },
+    { label: "Contracting", value: "4", tone: "text-emerald-600" },
+    { label: "At Risk", value: "2", tone: "text-red-500" },
+  ],
+};
+
+const onboardingTemplates: Record<AppRole, { id: string; label: string }[]> = {
+  owner: [
+    { id: "owner_brand", label: "Brand and portal profile configured" },
+    { id: "owner_rules", label: "Tax/tip/surcharge baseline published" },
+    { id: "owner_team", label: "Team roles and permissions assigned" },
+    { id: "owner_report_pack", label: "Executive report pack saved" },
+  ],
+  ops: [
+    { id: "ops_batch", label: "Batch and retry policy reviewed" },
+    { id: "ops_exceptions", label: "Exception response playbook acknowledged" },
+    { id: "ops_rules", label: "Workflow approvals connected" },
+    { id: "ops_alerts", label: "Operational alerts configured" },
+  ],
+  cashier: [],
+  finance: [],
+  agent: [
+    { id: "agent_demo", label: "Demo data profile loaded" },
+    { id: "agent_roi", label: "ROI calculator configured" },
+    { id: "agent_assets", label: "Sales collateral pack selected" },
+    { id: "agent_handoff", label: "Implementation handoff checklist shared" },
+  ],
+};
+
+const exceptionSnapshot: Record<AppRole, { total: string; summary: string; critical: string }> = {
+  owner: {
+    total: "7",
+    summary: "Issues requiring policy or strategic review",
+    critical: "2 high value declines need immediate attention",
+  },
+  ops: {
+    total: "8",
+    summary: "Operational exceptions currently open",
+    critical: "1 SLA breach if TXN-7330 not resolved in 12 min",
+  },
+  cashier: {
+    total: "2",
+    summary: "Transactions blocked at point of sale",
+    critical: "1 customer waiting on duplicate payment check",
+  },
+  finance: {
+    total: "4",
+    summary: "Finance queue exceptions",
+    critical: "2 settlement mismatches require reconciliation",
+  },
+  agent: {
+    total: "5",
+    summary: "Prospect and onboarding risk signals",
+    critical: "1 high-value prospect stalled on implementation timeline",
+  },
+};
 
 const recentTransactions = [
   { id: "TXN-8F2K9", amount: "$125.00", status: "Approved", time: "2 min ago", card: "•••• 4242" },
@@ -55,13 +182,89 @@ const recentTransactions = [
   { id: "TXN-5I5N3", amount: "$45.00", status: "Approved", time: "12 min ago", card: "•••• 9012" },
 ];
 
+interface QuickAction {
+  href: string;
+  label: string;
+  desc: string;
+  icon: typeof CreditCard;
+  roles?: AppRole[];
+}
+
+const quickActions: QuickAction[] = [
+  { href: "/sale", label: "Process Sale", desc: "Authorize and capture", icon: CreditCard },
+  {
+    href: "/exceptions",
+    label: "Exception Workbench",
+    desc: "Resolve declines and pending holds",
+    icon: CircleAlert,
+    roles: ["owner", "ops", "finance"],
+  },
+  {
+    href: "/rules",
+    label: "Rules Governance",
+    desc: "Review, approve, publish",
+    icon: Sparkles,
+    roles: ["owner", "ops", "finance", "agent"],
+  },
+  {
+    href: "/sales-mode",
+    label: "Sales Mode",
+    desc: "ROI calculator and demo profile",
+    icon: Target,
+    roles: ["owner", "agent"],
+  },
+  { href: "/reports", label: "View Reports", desc: "Analytics and exports", icon: FileText },
+];
+
+const ONBOARDING_STORAGE_KEY = "myela_onboarding_steps";
+
+type OnboardingState = Partial<Record<AppRole, Record<string, boolean>>>;
+
+function getInitialOnboardingState(): OnboardingState {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const value = window.localStorage.getItem(ONBOARDING_STORAGE_KEY);
+    return value ? (JSON.parse(value) as OnboardingState) : {};
+  } catch {
+    return {};
+  }
+}
+
 export default function Dashboard() {
+  const { role } = useRole();
+  const [onboardingState, setOnboardingState] = useState<OnboardingState>(getInitialOnboardingState);
+
+  const hero = roleHero[role];
+  const stats = roleStats[role];
+  const queue = queueByRole[role];
+  const onboardingSteps = onboardingTemplates[role];
+  const snapshot = exceptionSnapshot[role];
+  const currentRole = roleOptions.find((option) => option.id === role);
+
+  const visibleActions = quickActions.filter((action) => !action.roles || action.roles.includes(role));
+  const completedSteps = onboardingSteps.filter((step) => onboardingState[role]?.[step.id]).length;
+
+  const toggleOnboarding = (stepId: string) => {
+    const roleState = onboardingState[role] ?? {};
+    const nextRoleState = { ...roleState, [stepId]: !roleState[stepId] };
+    const nextState = { ...onboardingState, [role]: nextRoleState };
+
+    setOnboardingState(nextState);
+
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(nextState));
+    }
+  };
+
   return (
     <div className="flex-1 overflow-auto bg-[var(--color-shell)]">
       <div className="page-shell">
         <PageHeader
           title="Dashboard"
-          subtitle="Overview of your payment processing activity and approvals."
+          subtitle={`${hero.subtitle} Current view: ${currentRole?.label ?? "Role"}.`}
           actions={
             <>
               <Link href="/reports" className="btn btn-secondary btn-md">
@@ -81,17 +284,17 @@ export default function Dashboard() {
               <Zap className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
-                Welcome to your agent portal.
-              </h2>
-              <p className="text-sm text-slate-500 max-w-xl">
-                Gain insights into processing volumes, manage applications, and track approvals with ease.
-              </p>
+              <h2 className="text-lg font-semibold text-slate-900">{hero.title}</h2>
+              <p className="text-sm text-slate-500 max-w-xl">{hero.subtitle}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button className="btn btn-primary btn-sm">Download the playbook</button>
-            <button className="btn btn-outline btn-sm">Watch a quick tour</button>
+            <Link href="/exceptions" className="btn btn-outline btn-sm">
+              Exception Queue
+            </Link>
+            <Link href="/rules" className="btn btn-primary btn-sm">
+              Govern Rules
+            </Link>
           </div>
         </div>
 
@@ -113,11 +316,7 @@ export default function Dashboard() {
                       stat.positive ? "text-emerald-600" : "text-amber-600"
                     }`}
                   >
-                    {stat.positive ? (
-                      <ArrowUpRight className="w-4 h-4" />
-                    ) : (
-                      <ArrowDownRight className="w-4 h-4" />
-                    )}
+                    {stat.positive ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                     {stat.change}
                   </span>
                 </div>
@@ -140,51 +339,14 @@ export default function Dashboard() {
               </select>
             </div>
             <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={volumeData}>
-                  <defs>
-                    <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#eef2f7" vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    stroke="#94a3b8"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="#94a3b8"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `$${value / 1000}k`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#0b0b0b",
-                      border: "none",
-                      borderRadius: "12px",
-                      padding: "12px 16px",
-                    }}
-                    labelStyle={{ color: "#94a3b8", marginBottom: "4px" }}
-                    itemStyle={{ color: "#fff" }}
-                    formatter={(value) => [`$${Number(value).toLocaleString()}`, "Volume"]}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="volume"
-                    stroke="var(--color-primary)"
-                    strokeWidth={2.5}
-                    fill="url(#colorVolume)"
-                    dot={false}
-                    activeDot={{ r: 6, fill: "var(--color-primary)", strokeWidth: 3, stroke: "#fff" }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <MultiMetricAreaChart
+                data={volumeData}
+                xKey="name"
+                areaKey="volume"
+                areaLabel="Volume"
+                lines={[{ key: "count", label: "Merchant Count", color: "#0f172a" }]}
+                leftTickFormatter={(value) => `$${Math.round(value / 1000)}k`}
+              />
             </div>
           </div>
 
@@ -207,11 +369,71 @@ export default function Dashboard() {
                   <CheckCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-slate-900">Approval Rate</div>
-                  <div className="text-xs text-slate-500">94.2% this week</div>
+                  <div className="text-sm font-semibold text-slate-900">Role Mode</div>
+                  <div className="text-xs text-slate-500">{currentRole?.description}</div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+          <div className="panel p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold text-slate-900">Exception Workbench Snapshot</h3>
+                <p className="text-sm text-slate-500">{snapshot.summary}</p>
+              </div>
+              <span className="text-3xl font-semibold text-slate-900">{snapshot.total}</span>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+              {snapshot.critical}
+            </div>
+            <div className="mt-4">
+              <Link href="/exceptions" className="btn btn-primary btn-sm">
+                Open Workbench
+              </Link>
+            </div>
+          </div>
+
+          <div className="panel p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold text-slate-900">Activation Milestones</h3>
+                <p className="text-sm text-slate-500">
+                  {onboardingSteps.length > 0
+                    ? `${completedSteps}/${onboardingSteps.length} completed`
+                    : "No onboarding milestones for this role"}
+                </p>
+              </div>
+              {onboardingSteps.length > 0 && (
+                <span className="text-sm font-semibold text-slate-700">
+                  {Math.round((completedSteps / onboardingSteps.length) * 100)}%
+                </span>
+              )}
+            </div>
+            {onboardingSteps.length > 0 ? (
+              <div className="space-y-2">
+                {onboardingSteps.map((step) => {
+                  const checked = Boolean(onboardingState[role]?.[step.id]);
+                  return (
+                    <label key={step.id} className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleOnboarding(step.id)}
+                        className="w-4 h-4 rounded border-slate-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                      />
+                      <span className={`text-sm ${checked ? "text-slate-400 line-through" : "text-slate-700"}`}>
+                        {step.label}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-sm text-slate-500">Role is in execution mode with no activation checklist.</div>
+            )}
           </div>
         </div>
 
@@ -261,47 +483,25 @@ export default function Dashboard() {
           <div className="panel p-6">
             <h3 className="font-semibold text-slate-900 mb-4">Quick Actions</h3>
             <div className="space-y-3">
-              <Link
-                href="/sale"
-                className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-sm transition-all"
-              >
-                <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-slate-900 text-sm">Process Sale</div>
-                  <div className="text-xs text-slate-500">Authorize and capture</div>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400" />
-              </Link>
-
-              <Link
-                href="/authorize"
-                className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-sm transition-all"
-              >
-                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-slate-900 text-sm">Authorize Only</div>
-                  <div className="text-xs text-slate-500">Hold funds for capture</div>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400" />
-              </Link>
-
-              <Link
-                href="/reports"
-                className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-sm transition-all"
-              >
-                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
-                  <FileText className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-slate-900 text-sm">View Reports</div>
-                  <div className="text-xs text-slate-500">Analytics and exports</div>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400" />
-              </Link>
+              {visibleActions.map((action) => {
+                const Icon = action.icon;
+                return (
+                  <Link
+                    key={action.href}
+                    href={action.href}
+                    className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-sm transition-all"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-slate-900 text-sm">{action.label}</div>
+                      <div className="text-xs text-slate-500">{action.desc}</div>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>

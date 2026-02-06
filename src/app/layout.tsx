@@ -3,6 +3,7 @@ import { Manrope, Space_Grotesk, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import AppProviders from "@/components/AppProviders";
 
 const manrope = Manrope({
   variable: "--font-body",
@@ -20,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gateway POC",
-  description: "Payment Gateway Proof of Concept",
+  title: "Myela TAG Gateway",
+  description: "Myela TAG payment gateway operations dashboard",
 };
 
 export default function RootLayout({
@@ -35,11 +36,13 @@ export default function RootLayout({
         className={`${manrope.variable} ${spaceGrotesk.variable} ${geistMono.variable} antialiased`}
       >
         <div className="min-h-screen bg-[var(--color-shell)] text-slate-900 flex flex-col">
-          <Header />
-          <div className="flex flex-1 min-h-[calc(100vh-var(--topbar-height))]">
-            <Sidebar />
-            <main className="flex-1 min-w-0 flex flex-col">{children}</main>
-          </div>
+          <AppProviders>
+            <Header />
+            <div className="flex flex-1 min-h-[calc(100vh-var(--topbar-height))]">
+              <Sidebar />
+              <main className="flex-1 min-w-0 flex flex-col">{children}</main>
+            </div>
+          </AppProviders>
         </div>
       </body>
     </html>

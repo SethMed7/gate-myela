@@ -28,6 +28,7 @@ export default function TransactionForm({
 }: TransactionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [successTxnId, setSuccessTxnId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "ach">("card");
   const [showLevel23, setShowLevel23] = useState(false);
   const [formData, setFormData] = useState({
@@ -88,11 +89,14 @@ export default function TransactionForm({
 
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
+    const generatedId = `TXN-${Date.now().toString(36).toUpperCase()}`;
+    setSuccessTxnId(generatedId);
     setIsSubmitting(false);
     setIsSuccess(true);
 
     setTimeout(() => {
       setIsSuccess(false);
+      setSuccessTxnId("");
       setFormData({
         cardNumber: "",
         expiry: "",
@@ -138,7 +142,7 @@ export default function TransactionForm({
           </p>
           <div className="inline-flex items-center gap-2 bg-slate-900 text-white rounded-xl px-5 py-3 font-mono text-sm">
             <span className="text-slate-400">ID:</span>
-            TXN-{Math.random().toString(36).substring(2, 11).toUpperCase()}
+            {successTxnId}
           </div>
         </div>
       </div>

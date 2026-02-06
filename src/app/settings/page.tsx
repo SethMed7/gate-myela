@@ -7,6 +7,7 @@ import {
   Percent,
   HandCoins,
   CreditCard,
+  Save,
   CheckCircle,
   AlertCircle,
   Clock,
@@ -16,6 +17,7 @@ import {
   Users,
   Wallet,
   X,
+  Sparkles,
 } from "lucide-react";
 
 interface SupportRequest {
@@ -49,12 +51,42 @@ const statusConfig = {
   completed: { bg: "bg-emerald-50", text: "text-emerald-700", icon: CheckCircle },
 };
 
+const ruleProfiles = [
+  {
+    name: "Restaurant Standard",
+    details: "Tax 8.25%, tips 15/18/20/25, surcharge off",
+  },
+  {
+    name: "Service + Convenience",
+    details: "Tax 7.5%, custom tip ladder, 2.9% surcharge on cards",
+  },
+  {
+    name: "Retail Flat Pricing",
+    details: "Tax included in price, no tip, fixed surcharge $1.50",
+  },
+];
+
+const defaultPaymentSettings = {
+  taxEnabled: true,
+  taxRate: "8.25",
+  taxIncluded: false,
+  tipEnabled: true,
+  defaultTip: "18",
+  tipOptions: "15,18,20,25",
+  tipOnTax: false,
+  surchargeEnabled: false,
+  surchargeRate: "3.0",
+  surchargeType: "percentage",
+};
+
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("payment");
   const [requests, setRequests] = useState<SupportRequest[]>(initialRequests);
   const [showBankModal, setShowBankModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [showSavedState, setShowSavedState] = useState(false);
   const [bankFormData, setBankFormData] = useState({
     bankName: "",
     accountType: "checking",
@@ -63,18 +95,7 @@ export default function SettingsPage() {
     accountName: "",
   });
 
-  const [settings, setSettings] = useState({
-    taxEnabled: true,
-    taxRate: "8.25",
-    taxIncluded: false,
-    tipEnabled: true,
-    defaultTip: "18",
-    tipOptions: "15,18,20,25",
-    tipOnTax: false,
-    surchargeEnabled: false,
-    surchargeRate: "3.0",
-    surchargeType: "percentage",
-  });
+  const [settings, setSettings] = useState(defaultPaymentSettings);
 
   const handleBankRequest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +130,17 @@ export default function SettingsPage() {
         accountName: "",
       });
     }, 2000);
+  };
+
+  const hasUnsavedChanges =
+    JSON.stringify(settings) !== JSON.stringify(defaultPaymentSettings);
+
+  const handleSaveSettings = async () => {
+    setIsSavingSettings(true);
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    setIsSavingSettings(false);
+    setShowSavedState(true);
+    setTimeout(() => setShowSavedState(false), 1800);
   };
 
   const inputClasses = "input-base";
@@ -154,8 +186,23 @@ export default function SettingsPage() {
 
           <div className="flex-1">
             {activeTab === "payment" && (
-              <div className="w-full">
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div className="w-full space-y-4">
+                <div className="panel px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="font-semibold text-slate-900">Tax, Tip, and Surcharge Rules</div>
+                    <p className="text-sm text-slate-500">
+                      Configure reusable pricing logic for checkout and recurring billing flows.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button className="btn btn-secondary btn-sm">
+                      <Sparkles className="w-4 h-4" />
+                      Apply Preset
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,1fr)] gap-6 items-start">
                   <div className="space-y-6">
                     <div className="panel overflow-hidden">
                       <div className="panel-header flex items-center gap-3">
@@ -164,14 +211,14 @@ export default function SettingsPage() {
                         </div>
                         <div>
                           <h3 className="font-semibold text-slate-900">Tax Settings</h3>
-                          <p className="text-sm text-slate-500">Configure tax calculation</p>
+                          <p className="text-sm text-slate-500">Configure tax calculation and display logic</p>
                         </div>
                       </div>
                       <div className="panel-body space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <div className="font-medium text-slate-900">Enable Tax</div>
-                            <div className="text-sm text-slate-500">Add tax to transactions</div>
+                            <div className="text-sm text-slate-500">Apply tax to eligible transactions</div>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -198,13 +245,13 @@ export default function SettingsPage() {
                                 onChange={(e) =>
                                   setSettings({ ...settings, taxRate: e.target.value })
                                 }
-                                className={`${inputClasses} max-w-[150px]`}
+                                className={`${inputClasses} max-w-[180px]`}
                               />
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="font-medium text-slate-900">Tax Included in Price</div>
-                                <div className="text-sm text-slate-500">Prices already include tax</div>
+                                <div className="text-sm text-slate-500">Show tax-inclusive total at checkout</div>
                               </div>
                               <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -230,14 +277,14 @@ export default function SettingsPage() {
                         </div>
                         <div>
                           <h3 className="font-semibold text-slate-900">Tip Settings</h3>
-                          <p className="text-sm text-slate-500">Configure tipping options</p>
+                          <p className="text-sm text-slate-500">Set default tips and customer options</p>
                         </div>
                       </div>
                       <div className="panel-body space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <div className="font-medium text-slate-900">Enable Tipping</div>
-                            <div className="text-sm text-slate-500">Allow customers to add tips</div>
+                            <div className="text-sm text-slate-500">Allow optional tips at checkout</div>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -263,7 +310,7 @@ export default function SettingsPage() {
                                 onChange={(e) =>
                                   setSettings({ ...settings, defaultTip: e.target.value })
                                 }
-                                className={`${inputClasses} max-w-[150px]`}
+                                className={`${inputClasses} max-w-[180px]`}
                               />
                             </div>
                             <div>
@@ -286,9 +333,7 @@ export default function SettingsPage() {
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="font-medium text-slate-900">Calculate Tip on Tax</div>
-                                <div className="text-sm text-slate-500">
-                                  Include tax in tip calculation
-                                </div>
+                                <div className="text-sm text-slate-500">Include tax in tip calculation</div>
                               </div>
                               <label className="relative inline-flex items-center cursor-pointer">
                                 <input
@@ -311,21 +356,19 @@ export default function SettingsPage() {
                   <div className="space-y-6">
                     <div className="panel overflow-hidden">
                       <div className="panel-header flex items-center gap-3">
-                        <div className="p-2 rounded-xl bg-purple-50">
-                          <CreditCard className="w-5 h-5 text-purple-600" />
+                        <div className="p-2 rounded-xl bg-blue-50">
+                          <CreditCard className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>
                           <h3 className="font-semibold text-slate-900">Surcharge Settings</h3>
-                          <p className="text-sm text-slate-500">Configure processing surcharges</p>
+                          <p className="text-sm text-slate-500">Configure card surcharge behavior</p>
                         </div>
                       </div>
                       <div className="panel-body space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <div className="font-medium text-slate-900">Enable Surcharge</div>
-                            <div className="text-sm text-slate-500">
-                              Add surcharge to card transactions
-                            </div>
+                            <div className="text-sm text-slate-500">Apply surcharge to card transactions</div>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -376,9 +419,7 @@ export default function SettingsPage() {
                               <div className="flex items-start gap-3">
                                 <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                                 <div className="text-sm text-amber-800">
-                                  <strong>Important:</strong> Surcharging credit cards is regulated.
-                                  Ensure compliance with card network rules and state laws before
-                                  enabling.
+                                  <strong>Important:</strong> Surcharging is regulated. Confirm state and network rules before going live.
                                 </div>
                               </div>
                             </div>
@@ -386,16 +427,91 @@ export default function SettingsPage() {
                         )}
                       </div>
                     </div>
+
+                    <div className="panel p-5">
+                      <h3 className="font-semibold text-slate-900 mb-1">Reusable Rule Presets</h3>
+                      <p className="text-sm text-slate-500 mb-4">Standardized templates for faster onboarding</p>
+                      <div className="space-y-3">
+                        {ruleProfiles.map((profile) => (
+                          <button
+                            key={profile.name}
+                            className="w-full text-left rounded-xl border border-slate-200 p-3 hover:border-blue-200 hover:bg-blue-50/40 transition-colors"
+                          >
+                            <div className="text-sm font-semibold text-slate-900">{profile.name}</div>
+                            <div className="text-xs text-slate-500 mt-1">{profile.details}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="panel p-5">
+                      <h3 className="font-semibold text-slate-900 mb-1">Effective Checkout Preview</h3>
+                      <p className="text-sm text-slate-500 mb-4">How these rules appear to customers</p>
+                      <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-600">Subtotal</span>
+                          <span className="font-medium text-slate-900">$100.00</span>
+                        </div>
+                        {settings.taxEnabled && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-600">Tax ({settings.taxRate}%)</span>
+                            <span className="font-medium text-slate-900">$8.25</span>
+                          </div>
+                        )}
+                        {settings.tipEnabled && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-600">Tip ({settings.defaultTip}%)</span>
+                            <span className="font-medium text-slate-900">$18.00</span>
+                          </div>
+                        )}
+                        {settings.surchargeEnabled && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-600">Surcharge</span>
+                            <span className="font-medium text-slate-900">$3.00</span>
+                          </div>
+                        )}
+                        <div className="border-t border-slate-200 pt-2 mt-2 flex items-center justify-between">
+                          <span className="font-semibold text-slate-900">Estimated Total</span>
+                          <span className="text-lg font-semibold text-slate-900">$129.25</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-end mt-6">
-                  <button className="btn btn-primary btn-md">Save Settings</button>
+
+                <div className="sticky bottom-0 z-10">
+                  <div className="panel px-5 py-3.5 flex items-center justify-between gap-3 border-slate-200/90 shadow-lg shadow-slate-900/5">
+                    <div className="text-sm text-slate-500">
+                      {showSavedState
+                        ? "Settings saved successfully."
+                        : hasUnsavedChanges
+                          ? "Unsaved changes in payment settings."
+                          : "No pending changes."}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="btn btn-outline btn-sm"
+                        onClick={() => setSettings(defaultPaymentSettings)}
+                        disabled={!hasUnsavedChanges || isSavingSettings}
+                      >
+                        Discard
+                      </button>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={handleSaveSettings}
+                        disabled={!hasUnsavedChanges || isSavingSettings}
+                      >
+                      <Save className="w-4 h-4" />
+                        {isSavingSettings ? "Saving..." : "Save Settings"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
             {activeTab === "banking" && (
-              <div className="w-full xl:max-w-5xl space-y-6">
+              <div className="w-full space-y-6">
                 <div className="panel overflow-hidden">
                   <div className="panel-header flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -479,7 +595,7 @@ export default function SettingsPage() {
             {(activeTab === "notifications" ||
               activeTab === "team" ||
               activeTab === "security") && (
-              <div className="w-full xl:max-w-4xl">
+              <div className="w-full">
                 <div className="panel p-12 text-center">
                   <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     {activeTab === "notifications" && <Bell className="w-8 h-8 text-slate-400" />}
